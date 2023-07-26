@@ -2,7 +2,7 @@
 
 ## Description
 
-We're providing guideline for MMR-AD method that is proposed by `CJons-4 Team` based on the datasets available at [Yelp.com](https://www.yelp.com/dataset). We implemented MMR-AD method by using `PyTorch`, `Scikit-learn`, `Pandas`, `etc`.
+We're providing guidelines for Multi-Modal Recommender Systems with Anomaly Detection (For short MMR-AD) that is proposed by `CJons-4 Team` based on the datasets available at [Yelp.com](https://www.yelp.com/dataset). We implemented MMR-AD by using `PyTorch`, `Scikit-learn`, `Pandas`, `etc`.
 
 `data_utils.py`: includes `Dataset`, `DataLoader`.
 

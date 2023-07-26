@@ -1,6 +1,6 @@
 # CJONS-4
 
-#### Description
+## Description
 
 `data_utils.py`: includes `Dataset`, `DataLoader`.
 
@@ -10,27 +10,42 @@
 
 `utils.py`: includes utilization function.
 
+## Unzip tarfile
+```
+from settings import * 
+import tarfile, glob 
 
-#### Guide
+def unzip_tarfile(path):
+    with tarfile.open(path, 'r') as f:
+        f.extractall('dataset')
+        
+paths = glob.glob(DATA_DIR + '/*.tar')
 
-1. Clone this repository
+for p in paths:
+    unzip_tarfile(p)
+
+```
+
+## Guide
+
+**1. Clone this repository**
 ```
 git clone https://github.com/ceo21ckim/CJONS-4.git
 
 cd CJONS-4
 ```
 
-2. Build Dockerfile
+**2. Build Dockerfile**
 ```
 docker build --tag [filename]:1.0
 ```
 
-3. Execute/run docker container
+**3. Execute/run docker container**
 ```
 docker run -itd --gpus all --name cjons -p 8888:8888 -v C:\[PATH]\:/workspace [filename]:1.0 /bin/bash
 ```
 
-4. Use jupyter notebook
+**4. Use jupyter notebook**
 ```
 docker exec it [filename] bash
 

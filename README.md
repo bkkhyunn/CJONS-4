@@ -2,6 +2,10 @@
 
 ## Description
 
+We're providing three examples for use with the datasets available at [Yelp.com](https://www.yelp.com/dataset). 
+
+Then, we implemented MMR-AD model by using `PyTorch`, `Scikit-learn`, `Pandas`.
+
 `data_utils.py`: includes `Dataset`, `DataLoader`.
 
 `models.py`: includes `LSTM`, `NCF`, `ResNet`.

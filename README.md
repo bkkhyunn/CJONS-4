@@ -8,3 +8,12 @@
 `settings.py`: includes configuration for setting paths.
 
 `utils.py`: includes utilization function.
+
+
+```
+git clone https://github.com/ceo21ckim/CJONS-4.git
+
+cd CJONS-4
+
+
+```

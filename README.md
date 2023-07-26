@@ -49,7 +49,7 @@ docker run -itd --gpus all --name cjons -p 8888:8888 -v C:\[PATH]\:/workspace [f
 
 **4. Use jupyter notebook**
 ```
-docker exec it [filename] bash
+docker exec -it [filename] bash
 
 jupyter notebook --ip=0.0.0.0 --port=8888 --allow-root
 ```

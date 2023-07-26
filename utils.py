@@ -1,6 +1,7 @@
-import os, json
+import os, json, pickle 
 import numpy as np 
 import pandas as pd 
+import tarfile
 import torch 
 from tqdm.auto import tqdm 
 
@@ -26,7 +27,25 @@ def json2df(path):
             json_data.append(json.loads(line))
     return pd.json_normalize(json_data)
 
+def unzip_tarfile(path):
+    with tarfile.open(path, 'r') as f:
+        f.extractall('dataset')
 
+
+def save_pkl(df, fname='data/item_info.pkl'):
+    # os.chdir('/workspace')
+    if not os.path.exists('data'):
+        os.mkdir('data')
+        
+    with open(fname, 'wb') as f:
+        pickle.dump(df, f)
+    print(f'Success pickle file, which name is {fname}')
+    
+    
+def load_pkl(fname):
+    with open(fname, 'rb') as f:
+        files = pickle.load(f)
+    return files 
 
 # def evaluate(args, model, valid_loader, criterion):
 #     valid_loss, valid_acc = 0., 0.

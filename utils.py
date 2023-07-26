@@ -1,5 +1,6 @@
-import os 
+import os, json
 import numpy as np 
+import pandas as pd 
 import torch 
 from tqdm.auto import tqdm 
 
@@ -17,6 +18,13 @@ def elapsed_time(start, end):
     elapsed_min = elapsed // 60 
     elapsed_sec = elapsed - elapsed_min * 60 
     return elapsed_min, np.round(elapsed_sec, 2)
+
+def json2df(path):
+    json_data = []
+    with open(path, 'r') as f:
+        for line in tqdm(f, desc='transformating json to dataframe...'):
+            json_data.append(json.loads(line))
+    return pd.json_normalize(json_data)
 
 
 

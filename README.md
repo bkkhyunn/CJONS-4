@@ -1,5 +1,35 @@
 # CJONS-4
 
+## Paths
+
+```
+├── data
+│   ├── data_info.pkl
+│   ├── test.pkl
+│   ├── train.pkl
+│   └── valid.pkl
+│
+├── dataset
+│   ├── photos
+│   │   ├── --0h6FMC0V8aMtKQylojEg.jpg
+│   │   └── --....jpg
+│   │
+│   ├── photos.json
+│   ├── yelp_academic_dataset_business.json
+│   ├── yelp_academic_dataset_review.json
+│   ├── yelp_academic_dataset_user.json
+│   ├── yelp_dataset.tar
+│   └── yelp_photos.tar
+│
+├── data_utils.py
+├── Dockerfile
+├── models.py
+├── settings.py
+├── utils.py
+└── README.md
+```
+
+
 ## Description
 
 We're providing guidelines for Multi-Modal Recommender Systems with Anomaly Detection (For short MMR-AD) that is proposed by `CJons-4 Team` based on the datasets available at [Yelp.com](https://www.yelp.com/dataset). We implemented MMR-AD by using `PyTorch`, `Scikit-learn`, `Pandas`, `etc`.

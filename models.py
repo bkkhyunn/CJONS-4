@@ -56,7 +56,69 @@ class NCF(nn.Module):
         outs = self.layers(inputs)
 
         return outs 
-    
+
+
+def conv3x3(in_dim, out_dim, stride = 1, padding=1):
+    return nn.Conv2d(in_dim, out_dim, kernel_size=3, stride=stride, padding=padding, bias=False)
+
+def conv1x1(in_dim, out_dim, stride = 1):
+    return nn.Conv2d(in_dim, out_dim, kernel_size=1, stride=stride, bias=False)
+
+
+class Bottleneck(nn.Module):
+    def __init__(self, in_dim, out_dim, stride = 1, padding=1):
+        super(Bottleneck, self).__init__()
+        norm_layer = nn.BatchNorm2d
+        
+        self.conv1 = conv1x1(in_dim, out_dim)
+        self.bn1 = norm_layer(out_dim)
+        
+        self.conv2 = conv3x3(out_dim, out_dim, stride, padding)
+        self.bn2 = norm_layer(out_dim)
+        
+        self.conv3 = conv1x1(out_dim, out_dim * 2)
+        self.bn3 = norm_layer(out_dim * 2)
+        
+        self.relu = nn.ReLU(inplace=True)
+        self.stride = stride
+
+
+    def forward(self, x):
+        identity = x
+
+        out = self.conv1(x)
+        out = self.bn1(out)
+        out = self.relu(out)
+
+        out = self.conv2(out)
+        out = self.bn2(out)
+        out = self.relu(out)
+
+        out = self.conv3(out)
+        out = self.bn3(out)
+
+        out += identity
+        out = self.relu(out)
+
+        return out
+
+class ResNet(nn.Module):
+    def __init__(self, args, in_dim, out_dim, num_layers):
+       self.in_dim = in_dim
+       self.out_dim = out_dim 
+       self.num_layers = num_layers 
+       self.args = args 
+       
+       self.block = nn.Sequential(
+           Bottleneck(in_dim, out_dim), 
+           Bottleneck(out_dim, out_dim * 2)
+       )
+       
+       self.fc_layer = nn.Sequential(
+           
+       )
+
+
 # class MMR_AD(nn.Module):
 #     def __init__(self, args):
 #         self.ncf = NCF(args)

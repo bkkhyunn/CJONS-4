@@ -21,6 +21,11 @@
 │   ├── yelp_dataset.tar
 │   └── yelp_photos.tar
 │
+├── model_parameters
+│   ├── ncf.pt
+│   ├── ncf_lstm.pt
+│   └── mmr_ad.pt
+│
 ├── data_utils.py
 ├── Dockerfile
 ├── models.py

@@ -62,7 +62,3 @@ class Dset(Dataset):
 def get_loader(args, dataframe):
     d_set = Dset(args, dataframe)
     return DataLoader(d_set, batch_size=args.batch_size)
-    
-def get_loader(args, dataframe):
-    d_set = Dset(args, dataframe)
-    return DataLoader(d_set, batch_size=args.batch_size)

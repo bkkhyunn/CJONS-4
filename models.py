@@ -139,8 +139,8 @@ class MMR_AD(nn.Module):
 
     def forward(self, user, item, review, image):
 
-        ui_emb = self.ncf(user, item) # (h, hidden_dim // 4) 16
-        review_emb = self.lstm(review) # (b, hidden_dim // 4) 16
+        ui_emb = self.ncf(user, item) # (h, hidden_dim // 2)
+        review_emb = self.lstm(review) # (b, hidden_dim // 2)
         img_emb = self.resnet(image) # (b, hidden_dim)
 
         outs = torch.concat([ui_emb, review_emb], dim=-1)

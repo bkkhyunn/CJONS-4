@@ -7,21 +7,23 @@ from tqdm.auto import tqdm
 from PIL import Image 
 
 from settings import * 
+from utils import scaler
 
 
 class Dset(Dataset):
     def __init__(self, args, dataframe):
         self.df = dataframe
+        self.size = args.size
         self.max_len = args.max_len
         self.user_ids = self.df.user_id.values
         self.item_ids = self.df.business_id.values
         self.reviews = self.df.text.values
-        self.ratings = self.df.stars.values
+        self.ratings = scaler(self.df.stars.values)
         self.tokenizer = args.tokenizer
         self.images = self.df.loc[:, ['business_id', 'photo_id']].drop_duplicates().values
         
         self.transform = transforms.Compose([
-            transforms.Resize((256, 256)), 
+            transforms.Resize((self.size, self.size)), 
             transforms.ToTensor(), 
             transforms.Normalize(0.5, 0.5), 
         ])
@@ -39,6 +41,7 @@ class Dset(Dataset):
     def __getitem__(self, idx):
         user = self.user_ids[idx]
         item = self.item_ids[idx]
+        rating = self.ratings[idx]
         
         review = self.reviews[idx]
         review = self.tokenizer.encode_plus(
@@ -57,7 +60,7 @@ class Dset(Dataset):
             'item': torch.tensor(item, dtype=torch.long), 
             'review': torch.tensor(review, dtype=torch.long),
             'image': img, 
-        }
+        }, torch.tensor(rating, dtype=torch.float32)
     
 def get_loader(args, dataframe):
     d_set = Dset(args, dataframe)

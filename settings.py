@@ -14,4 +14,4 @@ PATH_DICT = {
     'review_paths': os.path.join(ORIGIN_DATA_DIR, 'yelp_academic_dataset_review.json') 
 }
 
-SAVE_DIR = os.path.join(BASE_DIR, 'model_parameters.pt')
+SAVE_DIR = os.path.join(BASE_DIR, 'model_parameters')

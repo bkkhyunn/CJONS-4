@@ -92,4 +92,3 @@ jupyter notebook --ip=0.0.0.0 --port=8888 --allow-root
 
 ## Training
 
-![image](https://github.com/ceo21ckim/CJONS-4/blob/main/asset/image1.PNG)

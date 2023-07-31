@@ -24,13 +24,15 @@
 ├── model_parameters
 │   ├── ncf.pt
 │   ├── ncf_lstm.pt
-│   └── mmr_ad.pt
+│   └── mmr.pt
 │
 ├── data_utils.py
 ├── Dockerfile
 ├── models.py
 ├── settings.py
+├── train.py
 ├── utils.py
+├── requirements.txt
 └── README.md
 ```
 

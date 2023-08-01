@@ -1,9 +1,12 @@
-import os, json, pickle, glob, re
+import os, json, pickle, glob, re, gzip
 import numpy as np 
 import pandas as pd 
 import tarfile
 import torch 
+from torch import nn 
+from urllib import request
 from PIL import Image 
+from io import BytesIO
 
 from tqdm.auto import tqdm 
 
@@ -27,9 +30,14 @@ def elapsed_time(start, end):
 
 def json2df(path):
     json_data = []
-    with open(path, 'r') as f:
-        for line in tqdm(f, desc='transformating json to dataframe...'):
-            json_data.append(json.loads(line))
+    if 'gz' in path:
+        with gzip.open(path, 'r') as f:
+            for line in tqdm(f, desc='transformating json to dataframe...'):
+                json_data.append(json.loads(line))
+    else:
+        with open(path, 'r') as f:
+            for line in tqdm(f, desc='transformating json to dataframe...'):
+                json_data.append(json.loads(line))
     return pd.json_normalize(json_data)
 
 def unzip_tarfile(path):
@@ -118,3 +126,54 @@ def scaler(x):
 
     outs = (x - _min) / (_max - _min)
     return outs
+
+def re_scaler(values):
+    # 0 ~ 1 -> 1 ~ 5
+    values = list(map(lambda x: x*4 + 1, values))
+    return values 
+
+def str2img(path):
+    req = request.Request(path)
+    res = request.urlopen(req).read()
+    return Image.open(BytesIO(res))
+
+def RMSE(pred_y, target):
+    criterion = nn.MSELoss()
+    loss = criterion(pred_y, target=target)
+    return torch.sqrt(loss)
+
+
+def inference(args, model, test_loader, mse, mae, rmse):
+    pred_ys, ys = [], []
+    test_mse_loss, test_mae_loss, test_rmse_loss = 0., 0., 0.
+    with torch.no_grad():
+        model.eval()
+        for batch, y in tqdm(test_loader):
+            batch = {k: b.to(args.device) for k, b in batch.items()}
+            y = y.to(args.device) * 4 + 1
+            
+            pred_y = model(**batch).squeeze() * 4 + 1
+            pred_ys.append(pred_y.detach().cpu().numpy())
+            ys.append(y.detach().cpu().numpy())
+            mse_loss = mse(pred_y, target=y)
+            mae_loss = mae(pred_y, target=y)
+            rmse_loss = rmse(pred_y, target=y)
+            
+            test_mse_loss += mse_loss.item()
+            test_mae_loss += mae_loss.item()
+            test_rmse_loss += rmse_loss.item()
+    test_mse_loss /= len(test_loader)
+    test_mae_loss /= len(test_loader)
+    test_rmse_loss /= len(test_loader)
+    
+    test_mse_loss = test_mse_loss
+    test_mae_loss = test_mae_loss
+    test_rmse_loss = test_rmse_loss 
+    
+    return {
+        'pred_y': pred_ys, 
+        'mse_loss': test_mse_loss , 
+        'mae_loss': test_mae_loss,
+        'rmse_loss': test_rmse_loss,
+        'target': ys
+    }

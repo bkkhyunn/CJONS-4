@@ -1,7 +1,11 @@
 import torch
 from torch import nn
 
+from transformers import AdamW 
 
+import gluonnlp as nlp 
+
+# apt-get update && apt-get -y install build-essential
 
 class LSTM(nn.Module):
     def __init__(self, args):
@@ -97,7 +101,7 @@ class CNNBlock(nn.Module):
         return nn.Conv2d(in_dim, out_dim, kernel_size=1, stride=stride, bias=False)
     
 
-# Proposed Model: user_id + item_id + reviews + images
+# Proposed Model: user_id + item_id + reviews + images + Anomaly Detection
 class MMR_AD(nn.Module):
     def __init__(self, args):
         super(MMR_AD, self).__init__()
@@ -122,6 +126,39 @@ class MMR_AD(nn.Module):
         ui_emb = self.ncf(user, item) # (b, hidden_dim * 2) 128
         review_emb = self.lstm(review) # (b, hidden_dim // 2) 32
         img_emb = self.resnet(image) # (b, hidden_dim)
+
+        outs = torch.concat([ui_emb, review_emb], dim=-1)
+        outs = torch.concat([outs, img_emb], dim=-1)
+
+        outs = self.fc_layer(outs)
+        outs = self.sigmoid(outs)
+        return outs 
+
+# Model: user_id + item_id + reviews + images
+class MMR(nn.Module):
+    def __init__(self, args):
+        super(MMR_AD, self).__init__()
+        self.ncf = UserItem(args)
+        self.lstm = LSTM(args)
+        self.resnet = CNNBlock(args)
+
+        self.hidden_dim = args.hidden_dim
+
+        self.fc_layer = nn.Sequential(
+            nn.Linear(self.hidden_dim * (2 + 1) + self.hidden_dim // 2, self.hidden_dim), 
+            nn.ReLU(), 
+            nn.Linear(self.hidden_dim, self.hidden_dim//2), 
+            nn.ReLU(), 
+            nn.Linear(self.hidden_dim // 2, 1)
+        )
+
+        self.sigmoid = nn.Sigmoid()
+
+    def forward(self, user, item, review, image):
+
+        ui_emb = self.ncf(user, item) # (b, hidden_dim * 2) 128
+        review_emb = self.lstm(review) # (b, hidden_dim // 2) 32
+        img_emb = self.resnet(image) # (b, hidden_dim) 
 
         outs = torch.concat([ui_emb, review_emb], dim=-1)
         outs = torch.concat([outs, img_emb], dim=-1)

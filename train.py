@@ -33,7 +33,7 @@ def train(args, model, train_loader, valid_loader, criterion, optimizer, schedul
         train_loss = 0.
         model.train()
         start = time.time()
-        for batch, y in train_loader:
+        for batch, y in tqdm(train_loader):
             batch = {k: b.to(args.device) for k, b in batch.items()}
             y = y.to(args.device)
             
@@ -84,8 +84,8 @@ if __name__ == '__main__':
     parser.add_argument('--num_epochs', default=100, type=int)
     parser.add_argument('--batch_size', default=512, type=int)
     parser.add_argument('--hidden_dim', default=64, type=int)
-    parser.add_argument('--num_users', default=56_432, type=int)
-    parser.add_argument('--num_items', default=25_328, type=int)
+    parser.add_argument('--num_users', default=11_562, type=int)
+    parser.add_argument('--num_items', default=24_033, type=int)
     parser.add_argument('--bidirectional', default=True, action='store_true')
     parser.add_argument('--dr_rate', default=0.2, type=float)
     parser.add_argument('--max_len', default=128, type=int)
@@ -93,7 +93,7 @@ if __name__ == '__main__':
     parser.add_argument('--model', required=True, type=str)
     parser.add_argument('--wandb', action='store_true')
     parser.add_argument('--device', default='cpu', type=str)
-    parser.add_argument('--patience', default=5, type=int)
+    parser.add_argument('--patience', default=3, type=int)
     args = parser.parse_args()
     
 

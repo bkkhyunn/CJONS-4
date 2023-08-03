@@ -4,6 +4,8 @@ from torch import nn
 from transformers import AdamW 
 
 import gluonnlp as nlp 
+from kobert import get_pytorch_kobert_model, get_tokenizer
+import sentencepiece 
 
 # apt-get update && apt-get -y install build-essential
 
@@ -100,44 +102,37 @@ class CNNBlock(nn.Module):
     def conv1x1(self, in_dim, out_dim, stride = 1):
         return nn.Conv2d(in_dim, out_dim, kernel_size=1, stride=stride, bias=False)
     
-
-# Proposed Model: user_id + item_id + reviews + images + Anomaly Detection
-class MMR_AD(nn.Module):
-    def __init__(self, args):
-        super(MMR_AD, self).__init__()
-        self.ncf = UserItem(args)
-        self.lstm = LSTM(args)
-        self.resnet = CNNBlock(args)
-
+class BERTClassifier(nn.Module):
+    def __init__(self, args, bert_model):
+        super(BERTClassifier, self).__init__()
+        self.model = bert_model 
         self.hidden_dim = args.hidden_dim
+        self.dr_rate = args.dr_rate
 
-        self.fc_layer = nn.Sequential(
-            nn.Linear(self.hidden_dim * (2 + 1) + self.hidden_dim // 2, self.hidden_dim), 
-            nn.ReLU(), 
-            nn.Linear(self.hidden_dim, self.hidden_dim//2), 
-            nn.ReLU(), 
-            nn.Linear(self.hidden_dim // 2, 1)
-        )
+        self.classifier = nn.Linear(self.hidden_size, self.hidden_dim)
 
-        self.sigmoid = nn.Sigmoid()
+        if self.dr_rate: self.dropout = nn.Dropout(p=self.dr_rate)
 
-    def forward(self, user, item, review, image):
+    def gen_attention_mask(self, token_ids, valid_length):
+        attention_mask = torch.zeros_like(token_ids)
+        for i, v in enumerate(valid_length):
+            attention_mask[i][:v] = 1
+        return attention_mask.float()
 
-        ui_emb = self.ncf(user, item) # (b, hidden_dim * 2) 128
-        review_emb = self.lstm(review) # (b, hidden_dim // 2) 32
-        img_emb = self.resnet(image) # (b, hidden_dim)
+    def forward(self, token_ids, valid_length, segment_ids):
 
-        outs = torch.concat([ui_emb, review_emb], dim=-1)
-        outs = torch.concat([outs, img_emb], dim=-1)
+        attention_mask = self.gen_attention_mask(token_ids, valid_length)
+        _, pooler = self.model(input_ids=token_ids, token_type_ids=segment_ids, attention_mask=attention_mask.float())
+        
+        if self.dr_rate: pooler = self.dropout(pooler)
+        FClayer = self.classifier(pooler)
+        return FClayer
 
-        outs = self.fc_layer(outs)
-        outs = self.sigmoid(outs)
-        return outs 
 
 # Model: user_id + item_id + reviews + images
 class MMR(nn.Module):
     def __init__(self, args):
-        super(MMR_AD, self).__init__()
+        super(MMR, self).__init__()
         self.ncf = UserItem(args)
         self.lstm = LSTM(args)
         self.resnet = CNNBlock(args)

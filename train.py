@@ -5,7 +5,7 @@ from torch import nn, optim
 from transformers import BertTokenizer
 
 from utils import * 
-from models import MMR_AD, NCF, NCF_LSTM
+from models import MMR, NCF, NCF_LSTM
 from data_utils import get_loader 
 import wandb 
 
@@ -74,7 +74,7 @@ def train(args, model, train_loader, valid_loader, criterion, optimizer, schedul
 MODEL_DICT = {
     'ncf': NCF, 
     'ncf_lstm': NCF_LSTM, 
-    'mmr_ad': MMR_AD
+    'mmr_ad': MMR
 }
 
 if __name__ == '__main__':
@@ -102,8 +102,8 @@ if __name__ == '__main__':
      
     device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
     
-    train_df = load_pkl(os.path.join(DATA_DIR, 'sample_train.pkl'))
-    valid_df = load_pkl(os.path.join(DATA_DIR, 'sample_valid.pkl'))
+    train_df = load_pkl(os.path.join(DATA_DIR, 'train.pkl'))
+    valid_df = load_pkl(os.path.join(DATA_DIR, 'valid.pkl'))
     
     print(f'Train dataset: {train_df.shape}\tValid dataset: {valid_df.shape}')
     

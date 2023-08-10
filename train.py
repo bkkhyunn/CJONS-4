@@ -74,7 +74,7 @@ def train(args, model, train_loader, valid_loader, criterion, optimizer, schedul
 MODEL_DICT = {
     'ncf': NCF, 
     'ncf_lstm': NCF_LSTM, 
-    'mmr_ad': MMR
+    'mmr': MMR
 }
 
 if __name__ == '__main__':

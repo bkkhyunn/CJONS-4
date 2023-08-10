@@ -101,6 +101,22 @@ docker exec -it [filename] bash
 jupyter notebook --ip=0.0.0.0 --port=8888 --allow-root
 ```
 
+**5. Training**
+```
+python3 train.py --wandb \\
+                 --lr 1e-3 \\
+                 --num_epochs 100 \\
+                 --batch_size 512\\
+                 --hidden_dim 65 \\
+                 --bidirectional \\
+                 --dr_rate 0.2 \\
+                 --max_len 128 \\
+                 --size 256 \\
+                 --model mmr \\
+                 --device cuda:0 \\
+                 --patience 3 
+```
+
 
 ## Training
 
